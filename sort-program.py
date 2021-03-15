@@ -164,6 +164,7 @@ def combine():
     for ne in range(fi_num):
         op = 'sort_%d.txt'%(ne+1)
         rein_file.append(open(op,'r',encoding='UTF-8'))
+        rein_file[ne].seek(0,0)
     
     reout_file = open('sort.txt','w',encoding='UTF-8')
     
@@ -172,31 +173,34 @@ def combine():
         str_file = []
         coun = 0
     
-        for lines in range(line_num):
-            line = rein_file[fi].readline()
-            list_file.append(line)
-            str_file.append(list_file[coun].split())
-            coun=coun+1
+        #for lines in range(line_num):
+        #    line = rein_file[fi].readline()
+        #    list_file.append(line)
+        #    str_file.append(list_file[coun].split())
+        #    coun=coun+1
+        line = rein_file[fi].readline()
+        list_file.append(line)
+        str_file.append(list_file[0].split())
         w_list.append(str_file[0])
 
     #requick(w_list, 0, len(w_list)-1)
     bubble(w_list, 0, len(w_list)-1, 4)
 
-    reinput_file = open('sort.txt','w',encoding='UTF-8')
-    for z in range(len(w_list[0])-1):
-        reinput_file.write(w_list[0][z+1])
-        reinput_file.write("   ")
-    reinput_file.write("\n")
+    #reinput_file = open('sort.txt','w',encoding='UTF-8')
+    #for z in range(len(w_list[0])-1):
+    #    reout_file.write(w_list[0][z+1])
+    #    reout_file.write("   ")
+    #reout_file.write("\n")
 
-    reout_file.close()
+    #reout_file.close()
 
-    for ne in range(fi_num):
-        in_file[ne].close()
+    #for ne in range(fi_num):
+    #    in_file[ne].close()
 
-    for ne in range(fi_num):
-        op = 'sort_%d.txt'%(ne+1)
-        lain_file.append(open(op,'r',encoding='UTF-8'))
-    laout_file = open('sort.txt','a',encoding='UTF-8')
+    #for ne in range(fi_num):
+    #    op = 'sort_%d.txt'%(ne+1)
+    #    lain_file.append(open(op,'r',encoding='UTF-8'))
+    #laout_file = open('sort.txt','a',encoding='UTF-8')
     
     fi=0
     
@@ -207,25 +211,36 @@ def combine():
         comparison=[]
         coun = 0
         fi_ch = w_list[0][0]
-        lain_file[int(fi_ch)-1].seek(0)
+        #lain_file[int(fi_ch)-1].seek(0)
         
         for z in range(len(w_list[0])-1):
-            laout_file.write(w_list[0][z+1])
-            laout_file.write("   ")
-        laout_file.write("\n")
+            reout_file.write(w_list[0][z+1])
+            reout_file.write("   ")
+        reout_file.write("\n")
         stop=stop+1 
 
-        for lines in range(line_num):
-            line = lain_file[int(fi_ch)-1].readline()
-            relist_file.append(line)
-            restr_file.append(relist_file[coun].split())
-            comparison.append(relist_file[coun].split())
-            coun=coun+1
-        next_line = comparison.index(w_list[0])
+        #for lines in range(line_num):
+        #    line = lain_file[int(fi_ch)-1].readline()
+        #    relist_file.append(line)
+        #    restr_file.append(relist_file[coun].split())
+        #    comparison.append(relist_file[coun].split())
+        #    coun=coun+1
+        #next_line = comparison.index(w_list[0])
+        line = rein_file[int(fi_ch)-1].readline()
+        relist_file.append(line)
+        restr_file.append(relist_file[0].split())
+        comparison.append(relist_file[0].split())
+
+        #print("DEBUG: w_list[0] = ", w_list[0])
         del w_list[0]
         try:
             #w_list.append(restr_file[(next_line+1)])
-            w_list.insert(0,restr_file[(next_line+1)])
+            #w_list.insert(0,restr_file[(next_line+1)])
+            if line != "" :
+                w_list.insert(0,restr_file[0])
+            else :
+                next
+                #continue
         except:
             next
 
@@ -262,14 +277,14 @@ def combine():
 
         if(stop==(fi_num*line_num)):
             for z in range(len(w_list[0])-1):
-                laout_file.write(w_list[0][z+1])
-                laout_file.write("   ")
+                reout_file.write(w_list[0][z+1])
+                reout_file.write("   ")
             print("통합 파일 작성완료")
             break
     
     for ne in range(fi_num):
-        lain_file[ne].close()
-    laout_file.close()
+        rein_file[ne].close()
+    reout_file.close()
     
 fi_num = 200 #파일 갯수
 line_num = 200 # 나눌 줄수
