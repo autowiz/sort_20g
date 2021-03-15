@@ -245,34 +245,13 @@ def combine():
             next
 
         #requick(w_list, 0, len(w_list)-1)
-        #bubble(w_list, 0, len(w_list)-1, 4)
-        # find smallest element from array.
-        #smallest_pt = 0
-        #smallest_value = w_list[0][4]
-        #for m in range(1 , len(w_list)):
-        for m in range(0 , len(w_list)-1):
-            if w_list[m][4] > w_list[m+1][4]:
-                gbl_swap_cnt2 += 1
-                w_list[m] , w_list[m+1] = w_list[m+1] , w_list[m]
-            else :
-                # break for loop ( m ).
-                # no need to go futher cause w_list is sorted.
-                break
-        # end for loop ( m ).
-    
-        # swap two elements in array(w_list).
-        #print("DEBUG: smallest_pt = " , smallest_pt ) 
-        #if smallest_pt != 0 :
-        #    w_list[0] , w_list[smallest_pt] = w_list[smallest_pt] , w_list[0]
-        # end if
-    
-        # end find .
+        bubble(w_list, 0, len(w_list)-1, 4)
 
         if(q==stop):
             q=q+(fi_num*line_num/10)
             p=p+10
             print(p,"%작성중(통합파일)")
-            print("DEBUG: gbl_swap_cnt2 = " , gbl_swap_cnt2 )
+            print("DEBUG: gbl_call_bubble_cnt = " , gbl_call_bubble_cnt )
             
 
         if(stop==(fi_num*line_num)):
