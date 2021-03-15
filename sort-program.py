@@ -179,7 +179,7 @@ def combine():
 
     #requick(w_list, 0, len(w_list)-1)
     bubble(w_list, 0, len(w_list)-1, 4)
-        
+
     reinput_file = open('sort.txt','w',encoding='UTF-8')
     for z in range(len(w_list[0])-1):
         reinput_file.write(w_list[0][z+1])
@@ -222,12 +222,33 @@ def combine():
         next_line = comparison.index(w_list[0])
         del w_list[0]
         try:
-            w_list.append(restr_file[(next_line+1)])
+            #w_list.append(restr_file[(next_line+1)])
+            w_list.insert(0,restr_file[(next_line+1)])
         except:
             next
 
         #requick(w_list, 0, len(w_list)-1)
-        bubble(w_list, 0, len(w_list)-1, 4)
+        #bubble(w_list, 0, len(w_list)-1, 4)
+        # find smallest element from array.
+        smallest_pt = 0
+        smallest_value = w_list[0][4]
+        for m in range(1 , len(w_list)):
+            if smallest_value > w_list[m][4]:
+                smallest_value = w_list[m][4]
+                smallest_pt = m
+            else
+                # break for loop ( m ).
+                # no need to go futher cause w_list is sorted.
+                break
+        # end for loop ( m ).
+    
+        # swap two elements in array(w_list).
+        #print("DEBUG: smallest_pt = " , smallest_pt ) 
+        if smallest_pt != 0 :
+            w_list[0] , w_list[smallest_pt] = w_list[smallest_pt] , w_list[0]
+        # end if
+    
+        # end find .
 
         if(q==stop):
             q=q+(fi_num*line_num/10)
