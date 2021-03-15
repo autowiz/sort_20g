@@ -7,9 +7,14 @@ import sys
 call_quick_cnt = 0
 call_requick_cnt = 0
 gbl_i_loop_cnt = 0
+gbl_call_bubble_cnt = 0
 
 def bubble(a, start, end, sort_key):
     global gbl_i_loop_cnt
+    global gbl_call_bubble_cnt
+    
+    gbl_call_bubble_cnt += 1
+
     swap_cnt = 0
     i_loop_cnt = 0
 
@@ -35,7 +40,7 @@ def bubble(a, start, end, sort_key):
     if sort_key == 3 :
         print( "DEBUG: i_loop_cnt = " , i_loop_cnt , "\t(" , gbl_i_loop_cnt , ")" )
     if sort_key == 4 :
-        print( "DEBUG: point_3: i_loop_cnt = " , i_loop_cnt , "\t(" , gbl_i_loop_cnt , ")" )
+        #print( "DEBUG: point_3: i_loop_cnt = " , i_loop_cnt , "\t(" , gbl_i_loop_cnt , ")" )
         if gbl_i_loop_cnt % 1000 == 0 :
             print( "DEBUG: point_2: i_loop_cnt = " , i_loop_cnt , "\t(" , gbl_i_loop_cnt , ")" )
 
@@ -103,8 +108,8 @@ def  split():
     global call_requick_cnt
     p=0
     q=0
-    #origin_file = open('ol_cdump_2020-11-30.txt','r',encoding='UTF-8')
-    origin_file = open('4m_lines_part_sorted.txt','r',encoding='UTF-8')
+    origin_file = open('ol_cdump_2020-11-30.txt','r',encoding='UTF-8')
+    #origin_file = open('4m_lines_part_sorted.txt','r',encoding='UTF-8')
 
     for ne in range(fi_num):
         op = 'sort_%d.txt'%(ne+1)
@@ -138,6 +143,7 @@ def  split():
             p=p+(fi_num/10)
             print (q,"% 작성완료(파일)")
             q=q+10
+            print("DEBUG: gbl_call_bubble_cnt = " , gbl_call_bubble_cnt )
     # end for loop ( fi ).
 
     origin_file.close()
@@ -227,6 +233,7 @@ def combine():
             q=q+(fi_num*line_num/10)
             p=p+10
             print(p,"%작성중(통합파일)")
+            print("DEBUG: gbl_call_bubble_cnt = " , gbl_call_bubble_cnt )
             
 
         if(stop==(fi_num*line_num)):
@@ -240,8 +247,8 @@ def combine():
         lain_file[ne].close()
     laout_file.close()
     
-fi_num = 2000 #파일 갯수
-line_num = 2000 # 나눌 줄수
+fi_num = 200 #파일 갯수
+line_num = 200 # 나눌 줄수
 in_file=[] #
 rein_file=[]
 lain_file=[]
