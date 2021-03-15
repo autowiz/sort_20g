@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
-#sys.setrecursionlimit(1000000000)
+sys.setrecursionlimit(1000000000)
 
 call_quick_cnt = 0
 call_requick_cnt = 0
@@ -127,9 +127,9 @@ def  split():
             str_file.append(list_file[coun].split())
             coun=coun+1
 
-        #quick(str_file, 0, len(str_file)-1)
+        quick(str_file, 0, len(str_file)-1)
         #bubble(str_file, 0, len(str_file)-1)
-        bubble(str_file, 0, len(str_file)-1, 3)
+        #bubble(str_file, 0, len(str_file)-1, 3)
 
         #print("DEBUG: call_quick_cnt = %d" , call_quick_cnt )
 
@@ -245,13 +245,34 @@ def combine():
             next
 
         #requick(w_list, 0, len(w_list)-1)
-        bubble(w_list, 0, len(w_list)-1, 4)
+        #bubble(w_list, 0, len(w_list)-1, 4)
+        # find smallest element from array.
+        #smallest_pt = 0
+        #smallest_value = w_list[0][4]
+        #for m in range(1 , len(w_list)):
+        for m in range(0 , len(w_list)-1):
+            if w_list[m][4] > w_list[m+1][4]:
+                gbl_swap_cnt2 += 1
+                w_list[m] , w_list[m+1] = w_list[m+1] , w_list[m]
+            else :
+                # break for loop ( m ).
+                # no need to go futher cause w_list is sorted.
+                break
+        # end for loop ( m ).
+    
+        # swap two elements in array(w_list).
+        #print("DEBUG: smallest_pt = " , smallest_pt ) 
+        #if smallest_pt != 0 :
+        #    w_list[0] , w_list[smallest_pt] = w_list[smallest_pt] , w_list[0]
+        # end if
+    
+        # end find .
 
         if(q==stop):
             q=q+(fi_num*line_num/10)
             p=p+10
             print(p,"%작성중(통합파일)")
-            print("DEBUG: gbl_call_bubble_cnt = " , gbl_call_bubble_cnt )
+            print("DEBUG: gbl_swap_cnt2 = " , gbl_swap_cnt2 )
             
 
         if(stop==(fi_num*line_num)):
@@ -265,8 +286,10 @@ def combine():
         rein_file[ne].close()
     reout_file.close()
     
+#fi_num = 2000 #파일 갯수
 fi_num = 200 #파일 갯수
-line_num = 200 # 나눌 줄수
+#line_num = 20000 # 나눌 줄수
+line_num = 2000 # 나눌 줄수
 in_file=[] #
 rein_file=[]
 lain_file=[]
@@ -276,10 +299,5 @@ w_list=[]
 
 split()
 
-print("INFO: call_quick_cnt = %d" , call_quick_cnt)
-print("INFO: call_requick_cnt = %d" , call_requick_cnt)
-
 combine()
 
-print("INFO: call_quick_cnt = %d" , call_quick_cnt)
-print("INFO: call_requick_cnt = %d" , call_requick_cnt)
