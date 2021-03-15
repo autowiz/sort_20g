@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import sys
-sys.setrecursionlimit(1000000000)
+import time
+#sys.setrecursionlimit(1000000000)
 
 #gbl_skip_inverse_left_cnt = 0
 #gbl_skip_inverse_right_cnt = 0
@@ -71,11 +72,17 @@ def work_listed_quick(a, start, end, sort_key):
     while_loop_cnt = 0
     work_list_length_sum = 0
     work_list_length_max = 0
-    slice_max = 4
+    slice_max = 40
+    slice_qty = 0
     slice_point = []
 
     passed_start = start
     passed_end = end
+
+    # calculate slice_max .
+    div_temp = ( end - start + 1 ) // 10
+    if div_temp < slice_max :
+        slice_max = div_temp
 
     # make slice_point list ( each's start and end ) .
     current_slice_start = 0
@@ -85,12 +92,16 @@ def work_listed_quick(a, start, end, sort_key):
         current_slice_end = current_slice_start + current_slice_size
         if current_slice_end > end :
             current_slice_end = end
-            current_slice_size = current_slice_end - current_slice_start
+            current_slice_size = current_slice_end - current_slice_start + 1
 
         slice_element = [current_slice_start , current_slice_end]
         slice_point.append(slice_element)
         work_list.append(slice_element)
+        slice_qty += 1
+
         current_slice_start = current_slice_end + 1
+        if current_slice_start > end :
+            break
 
     # check last slice's end point is equal to passed_end .
     if slice_point[-1][1] != passed_end :
@@ -174,58 +185,56 @@ def work_listed_quick(a, start, end, sort_key):
     # end while loop
 
     # write to file.
-
-    slice_fd = []
-    for i in range ( slice_max ) :
+    
+    slice_list = []
+    #for i in range ( slice_max ) :
+    for i in range ( slice_qty) :
         slice_element = slice_point[i]
-        slice_fd.insert(i , open('slice_temp_'+str(i),'w+',encoding='UTF-8') )
+        slice_list.append([])
         for j in range ( slice_point[i][0] , slice_point[i][1] + 1 ) :
-            slice_fd[i].write( "\t".join(a[j]) )
+            slice_list[i].append( a[j] )
         #slice_fd[i].flush()
 
-
-    line = ""
+    line_element = []
 
     # read from files.
     merge_list = []
-    for i in range ( slice_max ) :
-        slice_fd[i].seek(0)
-        line = slice_fd[i].readline()
-        #merge_list[i] = [i] + line.split()[0:1] + line.split()[1:]
-        if line != "" :
-            date_data_len = len ( line.split()[0] )
-            origin_line_data = line[date_data_len + 1 :]
-            #merge_list.insert ( i , [i] + line.split()[0:1] + ["\t".join(line.split()[1:])] )
-            merge_list.insert ( i , [i] + line.split()[0:1] + [origin_line_data] )
+    #for i in range ( slice_max ) :
+    for i in range ( slice_qty ) :
+        line_element = slice_list[i][0]
+        del slice_list[i][0]
+        merge_list.insert ( i , [i] + line_element )
+
 
     short_bb_sort_cnt=0
-    for i in range ( slice_max ) :
+    #for i in range ( slice_max ) :
+    for i in range ( slice_qty ) :
         #for j in range ( i , slice_max - 1 ) :
         short_bb_sort_cnt = 0
-        for j in range ( slice_max - i - 1 ) :
-            if merge_list[j][1] > merge_list[j+1][1] :
+        #for j in range ( slice_max - i - 1 ) :
+        for j in range ( slice_qty - i - 1 ) :
+            #if merge_list[j][1] > merge_list[j+1][1] :
+            if merge_list[j][sort_key+1] > merge_list[j+1][sort_key+1] :
                 short_bb_sort_cnt += 1
                 merge_list[j] , merge_list[j+1] = merge_list[j+1] , merge_list[j]
-        if short_bb_sort_cnt == 0 :
-            break
+        #if short_bb_sort_cnt == 0 :
+        #    break
 
     # merge .
     for i in range ( passed_start , passed_end + 1 ) :
         a[i] = merge_list[0][1:]
         current_slice_number = merge_list[0][0]
-        line = slice_fd[current_slice_number].readline()
-        if line != "" :
-            date_data_len = len ( line.split()[0] )
-            origin_line_data = line[date_data_len + 1 :]
-            #merge_list[0] = [current_slice_number] + line.split()[0:1] + ["\t".join(line.split()[1:])]
-            merge_list[0] = [current_slice_number] + line.split()[0:1] + [origin_line_data]
+        if len ( slice_list[current_slice_number] ) > 0 :
+            line_element = slice_list[current_slice_number][0]
+            del slice_list[current_slice_number][0]
+            merge_list[0] = [current_slice_number] + line_element
         else :
-            slice_fd[current_slice_number].close()
             del merge_list[0]
 
         # small sort
         for j in range ( len ( merge_list ) - 1 ) :
-            if merge_list[j][1] > merge_list[j+1][1] :
+            #if merge_list[j][1] > merge_list[j+1][1] :
+            if merge_list[j][sort_key+1] > merge_list[j+1][sort_key+1] :
                 merge_list[j] , merge_list[j+1] = merge_list[j+1] , merge_list[j]
             else :
                 break
@@ -300,6 +309,7 @@ def  split():
         if (fi>=p):
             p=p+(fi_num/10)
             print (q,"% 작성완료(파일)")
+            #sys.stdout.flush()
             q=q+10
             #print("DEBUG: gbl_call_bubble_cnt = " , gbl_call_bubble_cnt )
             #print("DEBUG: gbl_skip_inverse_left_cnt = " , gbl_skip_inverse_left_cnt )
@@ -337,8 +347,8 @@ def combine():
         str_file.append( [ line.split()[0] , line.split()[4] , "\t".join(line.split()[1:]) ] )
         #str_file.append( [ line.split()[0] , line.split()[5] , "\t".join(line.split()[2:]) ] )
 
-    quick21(str_file, 0, len(str_file)-1, 1)
-    #work_listed_quick(str_file, 0, len(str_file)-1, 1)
+    #quick21(str_file, 0, len(str_file)-1, 1)
+    work_listed_quick(str_file, 0, len(str_file)-1, 1)
 
     fi=0
     
@@ -439,6 +449,7 @@ def combine():
             q=q+(fi_num*line_num/10)
             p=p+10
             print(p,"%작성중(통합파일)")
+            reout_file.flush()
             ##print("INFO: combine_compare_cnt = " , combine_compare_cnt)
         
         if(stop==(fi_num*line_num)):
@@ -447,6 +458,8 @@ def combine():
             break
     
     print("INFO: closing infiles")
+    reout_file.flush()
+    #time.sleep ( 20 )
     in_file[int(str_file[0][0])-1].close()
     print("INFO: closing outfile")
     reout_file.close()
@@ -457,11 +470,9 @@ def combine():
 
 #fi_num = 2000 #파일 갯수
 fi_num = 200 #파일 갯수
-fi_num = 2000 #파일 갯수
 #fi_num = 20 #파일 갯수
 #line_num = 20000 # 나눌 줄수
 line_num = 2000 # 나눌 줄수
-line_num = 200 # 나눌 줄수
 in_file=[] #
 rein_file=[]
 lain_file=[]
