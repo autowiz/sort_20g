@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+#import time
 sys.setrecursionlimit(1000000000)
 
 gbl_call_quick_cnt = 0
@@ -9,6 +10,7 @@ gbl_call_requick_cnt = 0
 gbl_i_loop_cnt = 0
 gbl_call_bubble_cnt = 0
 gbl_swap_cnt2 = 0
+gbl_line_count = 0
 
 def bubble(a, start, end, sort_key):
     global gbl_i_loop_cnt
@@ -94,18 +96,12 @@ def requick(a, start, end):
     gbl_call_requick_cnt += 1
     if start < end: 
         left = start 
-        pivot_pt = start + ( end - start ) // 2
-        pivot_value = a[pivot_pt][4]
-        for i in range(start, end+1): 
-            if a[i][4] < pivot_value: 
-                if i != left :
-                    a[i], a[left] = a[left], a[i] 
-                if left == pivot_pt :
-                    pivot_pt = i
+        pivot = a[end][4]
+        for i in range(start, end): 
+            if a[i][4] < pivot: 
+                a[i], a[left] = a[left], a[i] 
                 left += 1 
-        if a[left][4] > pivot_value :
-            a[left] , a[pivot_pt] = a[pivot_pt], a[left] 
-
+        a[left] , a[end] = a[end], a[left] 
         requick(a, start, left-1)
         requick(a, left+1, end)
 
@@ -113,8 +109,15 @@ def requick(a, start, end):
 def  split():
     global gbl_call_quick_cnt
     global gbl_call_requick_cnt
+    global gbl_line_count
+    last_gbl_call_quick_cnt = 0
+
+    line_count = 0
+
     p=0
     q=0
+    coun=0
+
     origin_file = open('ol_cdump_2020-11-30.txt','r',encoding='UTF-8')
     #origin_file = open('4m_lines_part_sorted.txt','r',encoding='UTF-8')
 
@@ -125,34 +128,40 @@ def  split():
     for fi in range(fi_num):
         list_file = []
         str_file = []
+        line_count = line_count + coun
         coun = 0
     
         for lines in range(line_num):
             line = origin_file.readline()
+            #line_count = line_count + 1
             list_file.append(line)
             str_file.append(list_file[coun].split())
             coun=coun+1
 
-        #quick(str_file, 0, len(str_file)-1)
+        quick(str_file, 0, len(str_file)-1)
         #bubble(str_file, 0, len(str_file)-1)
-        bubble(str_file, 0, len(str_file)-1, 3)
+        #bubble(str_file, 0, len(str_file)-1, 3)
 
-        #print("DEBUG: call_quick_cnt = %d" , call_quick_cnt )
+        #print("DEBUG: gbl_call_quick_cnt = %d" , gbl_call_quick_cnt )
 
         for x in range(coun): 
-            in_file[fi].write(str(fi+1))
-            in_file[fi].write("  ")
-            for z in range(len(str_file[x])):
-                in_file[fi].write(str_file[x][z])
-                in_file[fi].write("  ")
-            in_file[fi].write("\n")
+            #in_file[fi].write(str(fi+1))
+            #in_file[fi].write("  ")
+            #for z in range(len(str_file[x])):
+                #in_file[fi].write(str_file[x][z])
+                #in_file[fi].write("  ")
+            #in_file[fi].write("\n")
+            #in_file_write_temp = str(fi+1) + "  " + "  ".join(str_file[x]) + "\n"
+            #in_file[fi].write(in_file_write_temp)
+            in_file[fi].write(str(fi+1) + "  " + "  ".join(str_file[x]) + "\n")
         if (fi==p):
             p=p+(fi_num/10)
             print (q,"% 작성완료(파일)")
             q=q+10
             #print("DEBUG: gbl_call_bubble_cnt = " , gbl_call_bubble_cnt )
-            print("DEBUG: gbl_call_quick_cnt = " , gbl_call_quick_cnt )
-            
+            diff_gbl_call_quick_cnt = gbl_call_quick_cnt - last_gbl_call_quick_cnt
+            last_gbl_call_quick_cnt = gbl_call_quick_cnt
+            print("DEBUG: gbl_call_quick_cnt = " , gbl_call_quick_cnt , " / " , diff_gbl_call_quick_cnt , " .")
     # end for loop ( fi ).
 
     origin_file.close()
@@ -160,11 +169,15 @@ def  split():
     for ne in range(fi_num):
         in_file[ne].close()
 
+    gbl_line_count = line_count
+
     print (q,"% 작성완료(파일).")
 
 def combine():
     global gbl_swap_cnt2
-    print ("2311345")
+    global gbl_line_count
+    #print ("2311345")
+    print ("INFO: gbl_line_count = " , gbl_line_count , " .")
     q=(fi_num*line_num/10)
     p=0
     stop = 1
@@ -221,10 +234,13 @@ def combine():
         fi_ch = w_list[0][0]
         #lain_file[int(fi_ch)-1].seek(0)
         
-        for z in range(len(w_list[0])-1):
-            reout_file.write(w_list[0][z+1])
-            reout_file.write("   ")
-        reout_file.write("\n")
+        #for z in range(len(w_list[0])-1):
+        #    reout_file.write(w_list[0][z+1])
+        #    reout_file.write("   ")
+        #reout_file.write("\n")
+        reout_file.write("   ".join(w_list[0][1:]) + "\n")
+        #time.sleep(1)
+
         stop=stop+1 
 
         #for lines in range(line_num):
@@ -237,7 +253,7 @@ def combine():
         line = rein_file[int(fi_ch)-1].readline()
         relist_file.append(line)
         restr_file.append(relist_file[0].split())
-        comparison.append(relist_file[0].split())
+        #comparison.append(relist_file[0].split())
 
         #print("DEBUG: w_list[0] = ", w_list[0])
         del w_list[0]
@@ -252,21 +268,21 @@ def combine():
         except:
             next
 
-        requick(w_list, 0, len(w_list)-1)
+        #requick(w_list, 0, len(w_list)-1)
         #bubble(w_list, 0, len(w_list)-1, 4)
         # find smallest element from array.
         #smallest_pt = 0
         #smallest_value = w_list[0][4]
         #for m in range(1 , len(w_list)):
-        #for m in range(0 , len(w_list)-1):
-        #    if w_list[m][4] > w_list[m+1][4]:
-        #        gbl_swap_cnt2 += 1
-        #        w_list[m] , w_list[m+1] = w_list[m+1] , w_list[m]
-        #    else :
-        #        # break for loop ( m ).
-        #        # no need to go futher cause w_list is sorted.
-        #        break
-        ## end for loop ( m ).
+        for m in range(0 , len(w_list)-1):
+            if w_list[m][4] > w_list[m+1][4]:
+                gbl_swap_cnt2 += 1
+                w_list[m] , w_list[m+1] = w_list[m+1] , w_list[m]
+            else :
+                # break for loop ( m ).
+                # no need to go futher cause w_list is sorted.
+                break
+        # end for loop ( m ).
     
         # swap two elements in array(w_list).
         #print("DEBUG: smallest_pt = " , smallest_pt ) 
@@ -280,8 +296,7 @@ def combine():
             q=q+(fi_num*line_num/10)
             p=p+10
             print(p,"%작성중(통합파일)")
-            #print("DEBUG: gbl_swap_cnt2 = " , gbl_swap_cnt2 )
-            print("DEBUG: gbl_call_requick_cnt = " , gbl_call_requick_cnt )
+            print("DEBUG: gbl_swap_cnt2 = " , gbl_swap_cnt2 )
             
 
         if(stop==(fi_num*line_num)):
@@ -295,8 +310,10 @@ def combine():
         rein_file[ne].close()
     reout_file.close()
     
-fi_num = 2000 #파일 갯수
-line_num = 200 # 나눌 줄수
+#fi_num = 2000 #파일 갯수
+fi_num = 200 #파일 갯수
+#line_num = 20000 # 나눌 줄수
+line_num = 2000 # 나눌 줄수
 in_file=[] #
 rein_file=[]
 lain_file=[]
