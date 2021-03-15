@@ -2,11 +2,62 @@
 # -*- coding: utf-8 -*-
 
 import sys
-#sys.setrecursionlimit(1000000000)
+sys.setrecursionlimit(1000000000)
 
 #gbl_skip_inverse_left_cnt = 0
 #gbl_skip_inverse_right_cnt = 0
 #gbl_recursion_level = 0
+
+def quick21(a, start, end, sort_key):
+    global gbl_skip_inverse_left_cnt
+    global gbl_skip_inverse_right_cnt
+    #global gbl_recursion_level 
+
+    #gbl_recursion_level += 1
+    #print ( "DEBUG: recursion_level = " , gbl_recursion_level )
+
+    if start < end:
+        left = start
+        pivot_pt = start + ( end - start ) // 2
+        pivot_value = a[pivot_pt][sort_key]
+        last_value_left = None
+        last_value_right = None
+        inverse_count_left = 0
+        inverse_count_right = 0
+
+        for i in range(start, end+1):
+            #print("DEBUG: i = " , i , " .")
+            if a[i][sort_key] < pivot_value:
+                if i != left :
+                    #swap_cnt+=1
+                    a[i], a[left] = a[left], a[i]
+                if left == pivot_pt :
+                    pivot_pt = i
+
+                # new performance logic.
+                if left > start :
+                    if last_value_left > a[left][sort_key] :
+                        inverse_count_left += 1
+                last_value_left = a[left][sort_key]
+
+                left += 1
+
+        # end for loop
+
+        if a[left][sort_key] > pivot_value :
+            a[left] , a[pivot_pt] = a[pivot_pt], a[left]
+
+        quick21(a, left+1, end, sort_key)
+
+        if inverse_count_left > 0 :
+            quick21(a, start, left-1, sort_key)
+        #else :
+        #    gbl_skip_inverse_left_cnt += 1
+
+        #quick21(a, left+1, end, sort_key)
+
+    #gbl_recursion_level -= 1
+
 
 def work_listed_quick(a, start, end, sort_key):
     #global gbl_skip_inverse_left_cnt
@@ -16,10 +67,38 @@ def work_listed_quick(a, start, end, sort_key):
     work_element = [start,end]
     #executed=0
     #work_element = [start,end,executed]
-    work_list.insert( len(work_list) , work_element )
+    # # # #work_list.insert( len(work_list) , work_element )
     while_loop_cnt = 0
     work_list_length_sum = 0
     work_list_length_max = 0
+    slice_max = 4
+    slice_point = []
+
+    passed_start = start
+    passed_end = end
+
+    # make slice_point list ( each's start and end ) .
+    current_slice_start = 0
+    current_slice_end = 0
+    current_slice_size = int ( ( end - start + 1 ) / slice_max )
+    for i in range(slice_max) :
+        current_slice_end = current_slice_start + current_slice_size
+        if current_slice_end > end :
+            current_slice_end = end
+            current_slice_size = current_slice_end - current_slice_start
+
+        slice_element = [current_slice_start , current_slice_end]
+        slice_point.append(slice_element)
+        work_list.append(slice_element)
+        current_slice_start = current_slice_end + 1
+
+    # check last slice's end point is equal to passed_end .
+    if slice_point[-1][1] != passed_end :
+        print("INFO: last slice's end is resetted with passed_end (" , slice_point[-1][1] , "->" , passed_end ,")")
+        slice_point[-1][1] == passed_end
+
+
+    # end for loop.
 
     while len ( work_list ) > 0 :
         
@@ -80,17 +159,79 @@ def work_listed_quick(a, start, end, sort_key):
 
             if inverse_count_left > 0 :
                 #quick21(a, start, left-1, sort_key)
-                work_list.insert( len(work_list) , [start,left-1] )
+                #work_list.insert( len(work_list) , [start,left-1] )
+                work_list.append( [start,left-1] )
                 #work_list.insert( len(work_list) , [start,left-1,0] )
             #else :
             #    gbl_skip_inverse_left_cnt += 1
             
             #quick21(a, left+1, end, sort_key)
-            work_list.insert( len(work_list) , [left+1,end] )
+            #work_list.insert( len(work_list) , [left+1,end] )
+            work_list.append( [left+1,end] )
             #work_list.insert( len(work_list) , [left+1,end,0] )
         # end if ( start < end ) .
 
     # end while loop
+
+    # write to file.
+
+    slice_fd = []
+    for i in range ( slice_max ) :
+        slice_element = slice_point[i]
+        slice_fd.insert(i , open('slice_temp_'+str(i),'w+',encoding='UTF-8') )
+        for j in range ( slice_point[i][0] , slice_point[i][1] + 1 ) :
+            slice_fd[i].write( "\t".join(a[j]) )
+        #slice_fd[i].flush()
+
+
+    line = ""
+
+    # read from files.
+    merge_list = []
+    for i in range ( slice_max ) :
+        slice_fd[i].seek(0)
+        line = slice_fd[i].readline()
+        #merge_list[i] = [i] + line.split()[0:1] + line.split()[1:]
+        if line != "" :
+            date_data_len = len ( line.split()[0] )
+            origin_line_data = line[date_data_len + 1 :]
+            #merge_list.insert ( i , [i] + line.split()[0:1] + ["\t".join(line.split()[1:])] )
+            merge_list.insert ( i , [i] + line.split()[0:1] + [origin_line_data] )
+
+    short_bb_sort_cnt=0
+    for i in range ( slice_max ) :
+        #for j in range ( i , slice_max - 1 ) :
+        short_bb_sort_cnt = 0
+        for j in range ( slice_max - i - 1 ) :
+            if merge_list[j][1] > merge_list[j+1][1] :
+                short_bb_sort_cnt += 1
+                merge_list[j] , merge_list[j+1] = merge_list[j+1] , merge_list[j]
+        if short_bb_sort_cnt == 0 :
+            break
+
+    # merge .
+    for i in range ( passed_start , passed_end + 1 ) :
+        a[i] = merge_list[0][1:]
+        current_slice_number = merge_list[0][0]
+        line = slice_fd[current_slice_number].readline()
+        if line != "" :
+            date_data_len = len ( line.split()[0] )
+            origin_line_data = line[date_data_len + 1 :]
+            #merge_list[0] = [current_slice_number] + line.split()[0:1] + ["\t".join(line.split()[1:])]
+            merge_list[0] = [current_slice_number] + line.split()[0:1] + [origin_line_data]
+        else :
+            slice_fd[current_slice_number].close()
+            del merge_list[0]
+
+        # small sort
+        for j in range ( len ( merge_list ) - 1 ) :
+            if merge_list[j][1] > merge_list[j+1][1] :
+                merge_list[j] , merge_list[j+1] = merge_list[j+1] , merge_list[j]
+            else :
+                break
+        # end small sort
+    # end for loop.
+
 
     #print ( "DEBUG: work_list length2 = " , work_list_length_max , "\t" , work_list_length_sum , "\t" , while_loop_cnt ) 
 
@@ -147,7 +288,10 @@ def  split():
         for x in range(len(str_file)) : 
             #in_file[fi].write(str(fi+1) + "  " + str_file[int(str_file_order[x][1])][1])
             in_file[fi].write(str(fi+1) + "  " + str_file[x][1])
-            #in_file[fi].flush()
+            #if str_file[x][1][-1] != "\n" :
+            #    in_file[fi].write("\n")
+            ## end if. ( insert new line )
+            in_file[fi].flush()
 
         # use writelines method .
         #in_file[fi].writelines(["\t".join(i) for i in str_file])
@@ -193,8 +337,8 @@ def combine():
         str_file.append( [ line.split()[0] , line.split()[4] , "\t".join(line.split()[1:]) ] )
         #str_file.append( [ line.split()[0] , line.split()[5] , "\t".join(line.split()[2:]) ] )
 
-    #quick21(str_file, 0, len(str_file)-1, 1)
-    work_listed_quick(str_file, 0, len(str_file)-1, 1)
+    quick21(str_file, 0, len(str_file)-1, 1)
+    #work_listed_quick(str_file, 0, len(str_file)-1, 1)
 
     fi=0
     
@@ -313,9 +457,11 @@ def combine():
 
 #fi_num = 2000 #파일 갯수
 fi_num = 200 #파일 갯수
+fi_num = 2000 #파일 갯수
 #fi_num = 20 #파일 갯수
 #line_num = 20000 # 나눌 줄수
 line_num = 2000 # 나눌 줄수
+line_num = 200 # 나눌 줄수
 in_file=[] #
 rein_file=[]
 lain_file=[]
