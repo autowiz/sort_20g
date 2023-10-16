@@ -5,12 +5,18 @@ ol_cdump_2020-11-30.txt 라는 도서정보를 담은 txt 파일을 정렬 하�
 
 ## 2. 샘플 데이터
 압축된 파일 ol_cdump_2020-11-30.txt.gz ( 약 23GB ) 을 다운로드 받아서
-압축을 해제 한 다음 사용.
+압축을 해제 한 다음 사용 ( 압축 해제시 약 132GB ) .
 
 프로그램 개발 초기에는 상위 일부 데이터만을 사용하여 진행 할 것을 추천.
 (예. 상위 1000줄 , 1만줄 , 10만줄)
 
-[ol_cdump_02020-11-30.txt.gz 다운로드](http://192.168.0.59/ddfile/ol_cdump_2020-11-30.txt.gz)
+(이 프로젝트는 신입사원 교육용 이었으며 아래 파일은 용량 때문에 내부의 별도 웹 서버를 사용 하였음)
+( [ol_cdump_2020-11-30.txt.gz 다운로드](http://backup-moon.intra.coremaxtech.com/ddfile/ol_cdump_2020-11-30.txt.gz) )
+
+위 파일은 Open Library 사이트의 complete dump 파일이며 , 외부 사용자는 아래 주소에 접속하여 다운로드 가능.
+https://openlibrary.org/developers/dumps
+또는
+https://openlibrary.org/data/ol_dump_latest.txt.gz
 
 ```
 $ ls -al ol_cdump_2020-11-30.txt.gz 
