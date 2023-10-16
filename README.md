@@ -14,8 +14,11 @@ ol_cdump_2020-11-30.txt 라는 도서정보를 담은 txt 파일을 정렬 하�
 ( [ol_cdump_2020-11-30.txt.gz 다운로드](http://backup-moon.intra.coremaxtech.com/ddfile/ol_cdump_2020-11-30.txt.gz) )
 
 위 파일은 Open Library 사이트의 complete dump 파일이며 , 외부 사용자는 아래 주소에 접속하여 다운로드 가능.
+
 https://openlibrary.org/developers/dumps
+
 또는
+
 https://openlibrary.org/data/ol_dump_latest.txt.gz
 
 ```
