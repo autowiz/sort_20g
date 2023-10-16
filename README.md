@@ -11,6 +11,7 @@ ol_cdump_2020-11-30.txt 라는 도서정보를 담은 txt 파일을 정렬 하�
 (예. 상위 1000줄 , 1만줄 , 10만줄)
 
 (이 프로젝트는 신입사원 교육용 이었으며 아래 파일은 용량 때문에 내부의 별도 웹 서버를 사용 하였음)
+
 ( [ol_cdump_2020-11-30.txt.gz 다운로드](http://backup-moon.intra.coremaxtech.com/ddfile/ol_cdump_2020-11-30.txt.gz) )
 
 위 파일은 Open Library 사이트의 complete dump 파일이며 , 외부 사용자는 아래 주소에 접속하여 다운로드 가능.
